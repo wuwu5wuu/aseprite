@@ -1,103 +1,139 @@
-name: build
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest]
-        build_type: [Release]
-        enable_ui: [on]
-        include:
-          - os: windows-latest
-            build_type: Release
-            enable_ui: on
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: 'recursive'
-    - name: ccache
+name: build名称：构建
+
+on: [push, pull_request]on：[push，pull_request]
+
+jobs:职位：
+
+  build: 构建：
+
+    runs-on: ${{ matrix.os }} 运行时间：${{ matrix.os }}
+
+    strategy: 战略：
+
+      fail-fast: false fail-fast：false
+
+      matrix: 矩阵：
+
+        os: [windows-latest] 操作系统：[windows-latest]
+
+        build_type: [Release] build_type：[发布]
+
+        enable_ui: [on] enable_ui：[on]
+
+        include: 包括：
+
+          - os: windows-latest - 操作系统：windows最新版
+
+            build_type: Release build_type：发布
+
+            enable_ui: on enable_ui：on
+
+    steps: 步骤：
+
+    - uses: actions/checkout@v3 - uses：actions/checkout@v3
+
+      with: 使用：
+
+        submodules: 'recursive' submodules：'recursive'
+
+    - name: ccache - 名称：ccache
+
       uses: hendrikmuhs/ccache-action@v1
-      if: runner.os == 'Linux'
-      with:
+ 使用：hendrikmuhs/ccache-action@v1
+
+      if: runner.os == 'Linux' if：runner.os == 'Linux'
+
+      with: 使用：
 
         key: ${{ matrix.os }}-${{ matrix.enable_ui }}
+ 关键字：${{ matrix.os }}-${{ matrix.enable_ui }}
 
     - uses: seanmiddleditch/gha-setup-ninja@master
+ - 使用：seanmiddleditch/gha-setup-ninja@master
 
-    - uses: ilammy/msvc-dev-cmd@v1
+    - uses: ilammy/msvc-dev-cmd@v1 - uses：ilammy/msvc-dev-js@v1
 
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' if：runner.os == 'Windows'
 
-    - name: Install Dependencies
+    - name: Install Dependencies - 名称：安装目录
 
-      shell: bash
+      shell: bash shell：bash
 
-      run: |
+      run: | 运行：|
 
         if [[ "${{ runner.os }}" == "Linux" ]] ; then
+ 如果[[“${{ runner.os }}”==“Linux”]] ;则
 
-          sudo apt-get update -qq
+          sudo apt-get update -qq sudo apt-get更新-qq
 
-          sudo apt-get install -y \
+          sudo apt-get install -y \ sudo apt-get install -y \
 
             libx11-dev libxcursor-dev libxi-dev
+ libx11-dev libxcursor-dev libxi-dev
 
-        fi
+        fi Fi
 
-    - name: Generating Makefiles
+    - name: Generating Makefiles - 名称：生成Makefile
 
-      shell: bash
+      shell: bash shell：bash
 
-      run: |
+      run: | 运行：|
 
         if [[ "${{ runner.os }}" == "Windows" ]] ; then
+ 如果[[“${{ runner.os }}”==“Windows”]] ;则
 
-          export enable_ccache=off
+          export enable_ccache=off export enable_ccache=off
 
-        else
+        else 其他
 
-          export enable_ccache=on
+          export enable_ccache=on export enable_ccache=on
 
-        fi
+        fi Fi
 
         curl -L https://github.com/blueloveTH/aseprite/releases/download/v0.01/skia.zip --output skia.zip
+ curl -L https://github.com/blueloveTH/aseprite/releases/download/v0.01/skia.zip--output skia.zip
 
-        7z x skia.zip
+        7z x skia.zip 7z x skia.zip
 
-        cmake -S . -B build -G Ninja \
+        cmake -S . -B build -G Ninja \ cmake -S。-B版本-G忍者\
 
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+ -DCMAKE_BUILD_TYPE=${{matrix.build_type }} \
 
           -DENABLE_UI=${{ matrix.enable_ui }} \
+      DENABLE _ UI = ${matrix . enable _ ui} \
 
           -DENABLE_CCACHE=$enable_ccache \
+ -DENABLE_CCACHE=$enable_ccache \
 
-          -DLAF_BACKEND=skia \
+          -DLAF_BACKEND=skia \ -DLAF_SEND =skia \
 
-          -DSKIA_DIR=./skia \
+          -DSKIA_DIR=./skia \ -DSKIA_=./斯基亚
 
           -DSKIA_LIBRARY_DIR=./skia/out/Release-x64 \
+ -DSKIA_LIBRARY_LIBRARY =./ skia/out/Release-x64 \
 
           -DSKIA_LIBRARY=./skia/out/Release-x64/skia.lib
+ -DSKIA_LIBRARY=./ skia/out/Release-x64/skia.lib
 
-    - name: Compiling
+    - name: Compiling - 名称：编译
 
-      shell: bash
+      shell: bash shell：bash
 
-      run: |
+      run: | 运行：|
 
-        cd build && ninja
+        cd build && ninja cd build && ninja
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v3 - uses：actions/upload-artifact@v3
 
-      with:
+      with: 使用：
 
-        name: aseprite
+        name: aseprite 产品名称：
 
-        path: |
+        path: | 路径：|
 
           D:/a/aseprite/aseprite/build/bin/data
+ D：/a/aseprite/aseprite/build/bin/data
 
-          D:/a/aseprite/aseprite/build/bin/aseprite.exe 作者：独立游戏杂货铺 https://www.bilibili.com/read/cv27083106/ 出处：bilibili
+          D:/a/aseprite/aseprite/build/bin/aseprite.exe
+ D:/a/aseprite/aseprite/build/bin/aseprite.exe
